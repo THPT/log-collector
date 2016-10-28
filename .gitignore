@@ -1,0 +1,11 @@
+# Build
+log-collector
+
+# Config
+config.go
+
+# OS File
+.DS_Store
+
+# Log
+log/*
