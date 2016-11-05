@@ -37,5 +37,8 @@ func GetEngine() *gin.Engine {
 }
 
 func (r *Router) Ping(c *gin.Context) {
-	c.JSON(200, gin.H{"res": "pong", "time": time.Now().String()})
+	c.JSON(200, gin.H{
+		"service": config.AppPort,
+		"time":    time.Now().String(),
+	})
 }
