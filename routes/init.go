@@ -4,6 +4,7 @@ import (
 	"log-collector/app/entity"
 	"log-collector/config"
 	"log-collector/middleware"
+	"time"
 
 	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,14 @@ func GetEngine() *gin.Engine {
 
 	// Setup router
 	router := &Router{}
-	group := app.Group("/logs")
-	group.POST("", router.ReciveEventLog)
+	groupPing := app.Group("")
+	groupPing.GET("/ping", router.Ping)
+
+	groupLog := app.Group("/logs")
+	groupLog.POST("", router.ReciveEventLog)
 	return app
+}
+
+func (r *Router) Ping(c *gin.Context) {
+	c.JSON(200, gin.H{"res": "pong", "time": time.Now().String()})
 }
