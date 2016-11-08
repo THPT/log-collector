@@ -7,12 +7,10 @@ import (
 )
 
 func (r *Router) ReciveEventLog(c *gin.Context) {
-	event := model.Event{}
-	c.BindJSON(&event)
-	event.CityId = 50
+	event := model.ParseEvent(c)
 	err, status := eventEntity.SendEvent(&event)
 	if err != nil {
 		c.AbortWithStatus(status)
 	}
-	c.AbortWithStatus(200)
+	c.JSON(200, event)
 }

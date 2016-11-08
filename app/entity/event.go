@@ -17,6 +17,19 @@ func NewEventEntity() EventInterface {
 }
 
 func (r *Event) SendEvent(event *model.Event) (error, int) {
-	repo.Kafka.SendEventLogAsync(event, model.EventTopic, model.EventKey)
+	var topic string
+	switch event.Metric {
+	case "pageview":
+		topic = model.TopicPageView
+	case "click":
+		topic = model.TopicClick
+	case "order":
+		topic = model.TopicOrder
+	default:
+		topic = ""
+	}
+	if topic != "" {
+		repo.Kafka.SendEventLogAsync(event, topic, model.TopicKey)
+	}
 	return nil, 200
 }

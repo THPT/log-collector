@@ -31,8 +31,8 @@ func GetEngine() *gin.Engine {
 	groupPing := app.Group("")
 	groupPing.GET("/ping", router.Ping)
 
-	groupLog := app.Group("/logs")
-	groupLog.POST("", router.ReciveEventLog)
+	groupLog := app.Group("/track")
+	groupLog.GET("", router.ReciveEventLog)
 	return app
 }
 
