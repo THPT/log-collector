@@ -3,7 +3,6 @@ package model
 import (
 	"encoding/json"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -48,7 +47,7 @@ func ParseEvent(c *gin.Context) Event {
 	e.CustomerId, _ = strconv.Atoi(CustomerIdStr)
 	e.CreatedAt = time.Now().Unix()
 	e.Agent = c.Request.Header.Get("User-Agent")
-	e.Ip = strings.Split(c.Request.RemoteAddr, ":")[0]
+	e.Ip = c.Request.Header.Get("X-Forwarded-For")
 	return e
 }
 
