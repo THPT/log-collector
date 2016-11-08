@@ -6,12 +6,15 @@ import (
 	"log-collector/middleware"
 	"time"
 
+	lumberjack "gopkg.in/natefinch/lumberjack.v2"
+
 	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	eventEntity entity.EventInterface
+	eventEntity   entity.EventInterface
+	UnexpectedLog = "log/access.log"
 )
 
 type Router struct {
@@ -23,6 +26,8 @@ func GetEngine() *gin.Engine {
 	// Set up gin
 	gin.SetMode(config.AppMode)
 	app := gin.New()
+	app.Use(gin.Recovery())
+	app.Use(gin.LoggerWithWriter(NewLogWriter(UnexpectedLog + "_" + config.AppPort)))
 	app.Use(gzip.Gzip(gzip.DefaultCompression))
 	app.Use(middleware.CORS())
 
@@ -41,4 +46,13 @@ func (r *Router) Ping(c *gin.Context) {
 		"service": config.AppPort,
 		"time":    time.Now().String(),
 	})
+}
+
+func NewLogWriter(log string) *lumberjack.Logger {
+	return &lumberjack.Logger{
+		Filename:   log,
+		MaxSize:    50, // megabytes
+		MaxBackups: 1000,
+		MaxAge:     30, // days
+	}
 }
