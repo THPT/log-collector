@@ -11,7 +11,6 @@ import (
 
 type kafka struct {
 	KafkaAsyncProducer sarama.AsyncProducer
-	KafkaSyncProducer  sarama.SyncProducer
 	KafkaConsumer      sarama.Consumer
 }
 
@@ -22,7 +21,6 @@ var (
 func CloseKafka() {
 	fmt.Println("Close all connect resource...")
 	Kafka.KafkaAsyncProducer.Close()
-	Kafka.KafkaSyncProducer.Close()
 	Kafka.KafkaConsumer.Close()
 }
 
@@ -37,19 +35,6 @@ func initKafkaAsyncProducer() (sarama.AsyncProducer, error) {
 	conf.Producer.Compression = sarama.CompressionSnappy
 	conf.Producer.Flush.Frequency = 500 * time.Millisecond
 	producer, err := sarama.NewAsyncProducer([]string{config.KafkaHost + ":" + config.KafkaPort}, conf)
-	return producer, err
-}
-
-func initKafkaSyncProducer() (sarama.SyncProducer, error) {
-	conf := sarama.NewConfig()
-	conf.Producer.RequiredAcks = sarama.WaitForAll
-	conf.Producer.Retry.Max = 10
-	tlsConfig := createTlsConfiguration()
-	if tlsConfig != nil {
-		conf.Net.TLS.Config = tlsConfig
-		conf.Net.TLS.Enable = true
-	}
-	producer, err := sarama.NewSyncProducer([]string{config.KafkaHost + ":" + config.KafkaPort}, conf)
 	return producer, err
 }
 
@@ -70,13 +55,6 @@ func InitKafka() {
 		panic(err)
 	}
 	Kafka.KafkaAsyncProducer = asyncProducer
-
-	syncProducer, err := initKafkaSyncProducer()
-	if err != nil {
-		fmt.Println("Connect Kafka failed...", err)
-		panic(err)
-	}
-	Kafka.KafkaSyncProducer = syncProducer
 
 	kafkaConsumer, err := initKafkaConsumer()
 	if err != nil {

@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	defer closeResource()
 	app := routes.GetEngine()
 	app.Run(config.AppHost + ":" + config.AppPort)
 }
