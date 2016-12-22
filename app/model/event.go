@@ -27,7 +27,8 @@ type Event struct {
 	VideoId    string
 	OrderId    int
 	CustomerId int
-
+	Viewer     int
+	Location   string
 	// Kafka encoded
 	encoded []byte
 	err     error
@@ -41,10 +42,13 @@ func ParseEvent(c *gin.Context) Event {
 	e.Metric = c.Query("metric")
 	e.ProductId = c.Query("product")
 	e.VideoId = c.Query("video")
+	e.Location = c.Query("location")
 	orderStr := c.DefaultQuery("order", "0")
 	e.OrderId, _ = strconv.Atoi(orderStr)
 	CustomerIdStr := c.DefaultQuery("customer_id", "0")
 	e.CustomerId, _ = strconv.Atoi(CustomerIdStr)
+	viewerStr := c.DefaultQuery("viewer", "0")
+	e.Viewer, _ = strconv.Atoi(viewerStr)
 	e.CreatedAt = time.Now().Unix()
 	e.Agent = c.Request.Header.Get("User-Agent")
 	e.Ip = c.Request.Header.Get("X-Forwarded-For")
